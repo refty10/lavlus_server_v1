@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"8d400fb1986d4573aa5b8f569cac907d","collectionName":"SpatiotemporalSetting"}

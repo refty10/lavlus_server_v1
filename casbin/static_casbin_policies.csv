@@ -1,0 +1,15 @@
+p,admin,/*,(GET)|(POST)|(PATCH)|(DELETE)
+p,everyone,/users/me,(GET)|(PATCH)|(DELETE)
+p,everyone,/users/me/sensing-data,(GET)|(DELETE)
+p,everyone,/user-profile,GET
+p,everyone,/user-profiles/:resource,GET
+p,everyone,/projects,GET
+p,everyone,/projects/:resource,GET
+p,everyone,/sensor-settings,GET
+p,everyone,/sensor-settings/:resource,GET
+p,everyone,/spatiotemporal-settings,GET
+p,everyone,/spatiotemporal-settings/:resource,GET
+p,everyone,/sensing-data/count,GET
+p,requester,/users/me/:resource,(GET)|(PATCH)|(DELETE)
+p,requester,/projects,POST
+p,collaborator,/projects/:id/sensing-data,POST

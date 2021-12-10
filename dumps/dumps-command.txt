@@ -1,0 +1,5 @@
+# dump
+mongodump --port 27017 --host 192.168.1.200 -d lavlus_server --out dumps
+
+# restore
+mongorestore --port 27017 --host 192.168.1.200 -d lavlus_server --dir dumps/lavlus_server
