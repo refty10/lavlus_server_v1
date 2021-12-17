@@ -6,7 +6,7 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Set up Git repository
+      - name: Set up Git repository # Repositoryのデータを取得
         uses: actions/checkout@v1
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
@@ -14,7 +14,5 @@ jobs:
           key: ${{ secrets.SSH_KEY }} # 必須
           name: id_rsa
           known_hosts: ${{ secrets.KNOWN_HOSTS }} # 必須
-      - name: ls -al
-        run: ls -al
       - name: run deploy script
         run: bash ./deploy.sh
