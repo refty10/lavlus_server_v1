@@ -6,6 +6,8 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Set up Git repository
+        uses: actions/checkout@v1
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
         with: # shimataro/ssh-key-actionに渡すパラメーター
