@@ -12,4 +12,4 @@ jobs:
           private-key: ${{ secrets.SSH_KEY }} # 必須
           known_hosts: ${{ secrets.KNOWN_HOSTS }} # 必須
       - name: run deploy script
-        run: bash deploy.sh
+        run: bash ./deploy.sh
