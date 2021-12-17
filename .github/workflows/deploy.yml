@@ -7,9 +7,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install SSH key
-        uses: shimataro/ssh-key-action@v1
+        uses: shimataro/ssh-key-action@v2
         with: # shimataro/ssh-key-actionに渡すパラメーター
           private-key: ${{ secrets.SSH_KEY }} # 必須
+          name: id_rsa
           known_hosts: ${{ secrets.KNOWN_HOSTS }} # 必須
+      - name: ls -al
+        run: ls -al
       - name: run deploy script
         run: bash ./deploy.sh
