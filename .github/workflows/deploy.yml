@@ -1,7 +1,6 @@
 on:
-  release:
-    types:
-      - published # 新しいリリースが作成されたときに実行
+  - push
+  - pull_request
 name: Deploy
 jobs:
   deploy:
