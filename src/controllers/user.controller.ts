@@ -88,6 +88,14 @@ const CredentialsSchema: SchemaObject = {
 };
 
 @model()
+export class SignInResponse extends User {
+  @property({
+    required: true,
+  })
+  token: string;
+}
+
+@model()
 export class Requester extends User {
   @property({
     required: true,
@@ -260,14 +268,15 @@ export class UserController {
   })
   async login(
     @requestBody(CredentialsRequestBody) credentials: Credentials,
-  ): Promise<{token: string}> {
+  ): Promise<SignInResponse> {
     // ensure the user exists, and the password is correct
     const user = await this.userService.verifyCredentials(credentials);
     // convert a User object into a UserProfile object (reduced set of properties)
     const userProfile = this.userService.convertToUserProfile(user);
     // create a JSON Web Token based on the user profile
     const token = await this.jwtService.generateToken(userProfile);
-    return {token};
+
+    return {...user, token} as SignInResponse;
   }
 
   @authenticate('jwt')
