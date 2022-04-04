@@ -76,9 +76,15 @@ export class LavlusServerApplication extends BootMixin(
     this.dataSource(DbDataSource, UserServiceBindings.DATASOURCE_NAME);
     this.bind(UserServiceBindings.USER_SERVICE).toClass(MyUserService);
     this.bind(UserServiceBindings.USER_REPOSITORY).toClass(UserRepository);
-    this.bind(UserServiceBindings.USER_CREDENTIALS_REPOSITORY).toClass(UserCredentialsRepository);
+    this.bind(UserServiceBindings.USER_CREDENTIALS_REPOSITORY).toClass(
+      UserCredentialsRepository,
+    );
     this.dataSource(DbDataSource, RefreshTokenServiceBindings.DATASOURCE_NAME);
     this.bind(TokenServiceBindings.TOKEN_SERVICE).toClass(JWTService);
+    // TODO: Fix this
+    this.bind(TokenServiceBindings.TOKEN_SECRET).to(
+      'WJnQaDV2uqwXB9c4pxiSYNtWRBuFfXzTy3rp5AwMQg8=',
+    );
     // AuthorizationComponent
     this.bind('casbin.enforcer.factory').to(getCasbinEnforcer);
     this.bind(`services.CasbinPolicy`).toClass(CasbinPolicyService);

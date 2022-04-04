@@ -3,6 +3,35 @@ import {generate} from '../utils';
 import {Project} from './project.model';
 
 @model()
+export class Sensor extends Entity {
+  @property({
+    type: 'string',
+    required: true,
+    jsonSchema: {
+      enum: [
+        'accelerometer',
+        'gyroscope',
+        'magnetometer',
+        'location',
+        'pressure',
+        'light',
+        'proximity',
+        'noiseLevel',
+        'wifi',
+        'ble',
+      ],
+    },
+  })
+  type: string;
+
+  @property({
+    type: 'number',
+    required: true,
+  })
+  refreshRate: number;
+}
+
+@model()
 export class SensorSetting extends Entity {
   @property({
     type: 'string',
@@ -19,11 +48,10 @@ export class SensorSetting extends Entity {
   })
   isProvidedProfile: boolean;
 
-  @property({
-    type: 'object',
+  @property.array(Sensor, {
     required: true,
   })
-  sensors: object;
+  periods: Sensor[];
 
   @property({
     type: 'date',

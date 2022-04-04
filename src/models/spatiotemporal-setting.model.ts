@@ -53,6 +53,21 @@ export class Period extends Entity {
 }
 
 @model()
+export class Location extends Entity {
+  @property({
+    type: 'number',
+    required: true,
+  })
+  latitude: number;
+
+  @property({
+    type: 'number',
+    required: true,
+  })
+  longitude: number;
+}
+
+@model()
 export class SpatiotemporalSetting extends Entity {
   @property({
     type: 'string',
@@ -67,7 +82,7 @@ export class SpatiotemporalSetting extends Entity {
     type: 'object',
     required: true,
   })
-  location: object;
+  location: Location;
 
   // TODO: スキーマを設定する
   @property({
