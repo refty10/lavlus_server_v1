@@ -51,7 +51,7 @@ export class SensorSetting extends Entity {
   @property.array(Sensor, {
     required: true,
   })
-  periods: Sensor[];
+  sensors: Sensor[];
 
   @property({
     type: 'date',
