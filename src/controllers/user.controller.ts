@@ -1,4 +1,4 @@
-import {model, property} from '@loopback/repository';
+import {model, property, FilterExcludingWhere, repository} from '@loopback/repository';
 import {
   param,
   get,
@@ -20,10 +20,12 @@ import {
   RefreshTokenService,
   Credentials,
 } from '@loopback/authentication-jwt';
-import {User, UserProfile as MyUserProfile} from '../models';
-import {UserRepository} from '../repositories';
+import {Project, User, UserProfile as MyUserProfile} from '../models';
+import {UserRepository, ProjectRepository} from '../repositories';
 import {genSalt, hash} from 'bcryptjs';
 import {CasbinPolicyService} from '../services';
+import {authorize} from '@loopback/authorization';
+import {FullProject} from './project.controller';
 
 // Describes the type of grant object taken in by method "refresh"
 type RefreshGrant = {
@@ -64,7 +66,7 @@ const RefreshSchema: SchemaObject = {
 
 // Describes the request body of grant object
 const RefreshGrantRequestBody = {
-  description: 'Reissuing Acess Token',
+  description: 'Reissuing access Token',
   required: true,
   content: {
     'application/json': {schema: RefreshGrantSchema},
@@ -141,6 +143,8 @@ export class UserController {
     public refreshService: RefreshTokenService,
     @inject('services.CasbinPolicy')
     public casbinPolicyService: CasbinPolicyService,
+    @repository(ProjectRepository)
+    public projectRepository: ProjectRepository,
   ) {}
 
   @post('/users/signup/requesters', {
@@ -305,31 +309,31 @@ export class UserController {
     return user as Requester;
   }
 
-  /**
-   * A login function that returns refresh token and access token.
-   * @param credentials User email and password
-   */
-  @post('/users/refresh-login', {
-    responses: {
-      '200': {
-        description: 'Token',
-        content: {
-          'application/json': {schema: RefreshLoginSchema},
-        },
-      },
-    },
-  })
-  async refreshLogin(
-    @requestBody(CredentialsRequestBody) credentials: Credentials,
-  ): Promise<TokenObject> {
-    // ensure the user exists, and the password is correct
-    const user = await this.userService.verifyCredentials(credentials);
-    // convert a User object into a UserProfile object (reduced set of properties)
-    const userProfile: UserProfile = this.userService.convertToUserProfile(user);
-    const accessToken = await this.jwtService.generateToken(userProfile);
-    const tokens = await this.refreshService.generateToken(userProfile, accessToken);
-    return tokens;
-  }
+  // /**
+  //  * A login function that returns refresh token and access token.
+  //  * @param credentials User email and password
+  //  */
+  // @post('/users/refresh-login', {
+  //   responses: {
+  //     '200': {
+  //       description: 'Token',
+  //       content: {
+  //         'application/json': {schema: RefreshLoginSchema},
+  //       },
+  //     },
+  //   },
+  // })
+  // async refreshLogin(
+  //   @requestBody(CredentialsRequestBody) credentials: Credentials,
+  // ): Promise<TokenObject> {
+  //   // ensure the user exists, and the password is correct
+  //   const user = await this.userService.verifyCredentials(credentials);
+  //   // convert a User object into a UserProfile object (reduced set of properties)
+  //   const userProfile: UserProfile = this.userService.convertToUserProfile(user);
+  //   const accessToken = await this.jwtService.generateToken(userProfile);
+  //   const tokens = await this.refreshService.generateToken(userProfile, accessToken);
+  //   return tokens;
+  // }
 
   @post('/refresh', {
     responses: {
@@ -355,5 +359,26 @@ export class UserController {
   async checkUniqueUsername(username: string): Promise<boolean> {
     const count = await this.userRepository.count({username});
     return !(count.count > 0);
+  }
+
+  // @authorize({
+  //   resource: '/projects',
+  //   scopes: ['GET'],
+  // })
+  @get('/users/{id}/projects')
+  @response(200, {
+    description: 'FullProject model instance',
+    content: {
+      'application/json': {
+        schema: getModelSchemaRef(FullProject, {includeRelations: true}),
+      },
+    },
+  })
+  async findById(@param.path.string('id') id: string): Promise<FullProject[]> {
+    const findByUserIdFilter = {where: {ownerId: id}};
+    const includeFilter = {
+      include: [{relation: 'sensorSetting'}, {relation: 'spatiotemporalSetting'}],
+    };
+    return this.projectRepository.find({...includeFilter, ...findByUserIdFilter});
   }
 }
