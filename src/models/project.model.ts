@@ -32,7 +32,7 @@ export class Project extends Entity {
     required: true,
     jsonSchema: {
       minLength: 10,
-      maxLength: 200,
+      maxLength: 2000,
     },
   })
   overview: string;
