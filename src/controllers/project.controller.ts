@@ -214,16 +214,18 @@ export class ProjectController {
       ],
     };
     const project = await this.projectRepository.findById(id, includeFilter);
-    // Remove casbin policy
-    const sensingDataIds = project.sensingData.map(e => e.id);
     await this.casbinPolicyService.removeProjectPolicy(
       project.ownerId,
       project.id,
       project.sensorSetting.id,
       project.spatiotemporalSetting.id,
     );
-    sensingDataIds.length > 0 &&
-      (await this.casbinPolicyService.removeSensingDataPolicies(sensingDataIds));
+    // Remove casbin policy
+    if (project.sensingData) {
+      const sensingDataIds = project.sensingData.map(e => e.id);
+      sensingDataIds.length > 0 &&
+        (await this.casbinPolicyService.removeSensingDataPolicies(sensingDataIds));
+    }
     await this.casbinPolicyService.savePolicy();
     // Remove data
     await this.memberRepository.deleteAll({projectId: id});
