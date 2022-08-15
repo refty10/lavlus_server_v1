@@ -365,7 +365,7 @@ export class UserController {
   //   resource: '/projects',
   //   scopes: ['GET'],
   // })
-  @get('/users/{id}/projects')
+  @get('/users/{username}/projects')
   @response(200, {
     description: 'FullProject model instance',
     content: {
@@ -374,8 +374,17 @@ export class UserController {
       },
     },
   })
-  async findById(@param.path.string('id') id: string): Promise<FullProject[]> {
-    const findByUserIdFilter = {where: {ownerId: id}};
+  async findById(
+    @param.path.string('username') username: string,
+  ): Promise<FullProject[]> {
+    const findByUsernameFilter = {where: {username}};
+    const user = await this.userRepository.findOne(findByUsernameFilter);
+    const err = new HttpErrors.NotFound(
+      `Entity not found: User with username "${username}".`,
+    );
+    err.code = 'ENTITY_NOT_FOUND';
+    if (!user) throw err;
+    const findByUserIdFilter = {where: {ownerId: user.id}};
     const includeFilter = {
       include: [{relation: 'sensorSetting'}, {relation: 'spatiotemporalSetting'}],
     };
